@@ -2,6 +2,8 @@ package one.dio.measuringdevicesmgmt.controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,7 +27,7 @@ public class MeasuringDeviceController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public MeasuringDeviceDTO createMeasuringDevice(@RequestBody MeasuringDeviceDTO measuringDeviceDTO) throws InternalCodeAlreadyExistsException{
+    public MeasuringDeviceDTO createMeasuringDevice(@RequestBody @Valid MeasuringDeviceDTO measuringDeviceDTO) throws InternalCodeAlreadyExistsException{
         return measuringDeviceService.createMeasuringDevice(measuringDeviceDTO);
     }
 

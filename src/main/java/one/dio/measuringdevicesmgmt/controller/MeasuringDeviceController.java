@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.AllArgsConstructor;
 import one.dio.measuringdevicesmgmt.dto.MeasuringDeviceDTO;
+import one.dio.measuringdevicesmgmt.exception.InternalCodeAlreadyExistsException;
 import one.dio.measuringdevicesmgmt.service.MeasuringDeviceService;
 
 @RestController
@@ -24,7 +25,7 @@ public class MeasuringDeviceController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public MeasuringDeviceDTO createMeasuringDevice(@RequestBody MeasuringDeviceDTO measuringDeviceDTO) {
+    public MeasuringDeviceDTO createMeasuringDevice(@RequestBody MeasuringDeviceDTO measuringDeviceDTO) throws InternalCodeAlreadyExistsException{
         return measuringDeviceService.createMeasuringDevice(measuringDeviceDTO);
     }
 

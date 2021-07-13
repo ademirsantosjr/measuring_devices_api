@@ -46,7 +46,6 @@ public class MeasuringDeviceService {
 
     public MeasuringDeviceDTO updateByInternalCode(String internalCode, MeasuringDeviceDTO measuringDeviceDTO) throws MeasuringDeviceNotFoundException, InternalCodeAlreadyExistsException {
         verifyIfExists(internalCode);
-        verifyIfInternalCodeAlreadyExists(internalCode);
         MeasuringDevice measuringDeviceToUpdate = measuringDeviceMapper.toModel(measuringDeviceDTO);
         MeasuringDevice updatedMeasuringDevice = measuringDeviceRepository.save(measuringDeviceToUpdate);
         return measuringDeviceMapper.toDTO(updatedMeasuringDevice);

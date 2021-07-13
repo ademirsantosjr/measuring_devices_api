@@ -25,7 +25,7 @@ import one.dio.measuringdevicesmgmt.service.MeasuringDeviceService;
 @RestController
 @RequestMapping("/api/v1/devices")
 @AllArgsConstructor(onConstructor = @__(@Autowired))
-public class MeasuringDeviceController {
+public class MeasuringDeviceController implements MeasuringDevicesControllerDocs{
     
     private MeasuringDeviceService measuringDeviceService;
 

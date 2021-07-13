@@ -1,7 +1,6 @@
 package one.dio.measuringdevicesmgmt.controller;
 
 import static one.dio.measuringdevicesmgmt.utils.JsonConvertionUtils.asJsonString;
-//import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -12,7 +11,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Collections;
-import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,10 +27,7 @@ import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
 import one.dio.measuringdevicesmgmt.builder.MeasuringDeviceDTOBuilder;
 import one.dio.measuringdevicesmgmt.dto.MeasuringDeviceDTO;
-import one.dio.measuringdevicesmgmt.entity.MeasuringDevice;
 import one.dio.measuringdevicesmgmt.exception.MeasuringDeviceNotFoundException;
-import one.dio.measuringdevicesmgmt.mapper.MeasuringDeviceMapper;
-import one.dio.measuringdevicesmgmt.repository.MeasuringDeviceRepository;
 import one.dio.measuringdevicesmgmt.service.MeasuringDeviceService;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,8 +37,6 @@ public class MeasuringDeviceControllerTest {
     private static final String INVALID_MEASURING_DEVICE_INTERNAL_CODE = "DVC-12345";
 
     private MockMvc mockMvc;
-
-    private MeasuringDeviceMapper measuringDeviceMapper = MeasuringDeviceMapper.INSTANCE;
 
     @Mock
     private MeasuringDeviceService measuringDeviceService;

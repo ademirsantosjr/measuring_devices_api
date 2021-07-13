@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +13,7 @@ import lombok.AllArgsConstructor;
 import one.dio.measuringdevicesmgmt.dto.MeasuringDeviceDTO;
 import one.dio.measuringdevicesmgmt.entity.MeasuringDevice;
 import one.dio.measuringdevicesmgmt.exception.InternalCodeAlreadyExistsException;
+import one.dio.measuringdevicesmgmt.exception.MeasuringDeviceNotFoundException;
 import one.dio.measuringdevicesmgmt.mapper.MeasuringDeviceMapper;
 import one.dio.measuringdevicesmgmt.repository.MeasuringDeviceRepository;
 
@@ -18,15 +21,20 @@ import one.dio.measuringdevicesmgmt.repository.MeasuringDeviceRepository;
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 public class MeasuringDeviceService {
     
-    private final MeasuringDeviceRepository measuringDeviceRepository;
+    private MeasuringDeviceRepository measuringDeviceRepository;
 
     private final MeasuringDeviceMapper measuringDeviceMapper = MeasuringDeviceMapper.INSTANCE;
 
     public MeasuringDeviceDTO createMeasuringDevice(MeasuringDeviceDTO measuringDeviceDTO) throws InternalCodeAlreadyExistsException {
-        VerifyIfInternalCodeAlreadyExists(measuringDeviceDTO.getInternalCode());
+        verifyIfInternalCodeAlreadyExists(measuringDeviceDTO.getInternalCode());
         MeasuringDevice measuringDevice = measuringDeviceMapper.toModel(measuringDeviceDTO);
         MeasuringDevice savedMeasuringDevice = measuringDeviceRepository.save(measuringDevice);
         return measuringDeviceMapper.toDTO(savedMeasuringDevice);
+    }
+
+    public MeasuringDeviceDTO findByInternalCode(String internalCode) throws MeasuringDeviceNotFoundException{
+        MeasuringDevice foundMeasuringDevice = measuringDeviceRepository.findByInternalCode(internalCode).orElseThrow(() -> new MeasuringDeviceNotFoundException(internalCode));
+        return measuringDeviceMapper.toDTO(foundMeasuringDevice);
     }
 
     public List<MeasuringDeviceDTO> listAll() {
@@ -36,10 +44,27 @@ public class MeasuringDeviceService {
                                         .collect(Collectors.toList());
     }
 
-    private void VerifyIfInternalCodeAlreadyExists(String internalCode) throws InternalCodeAlreadyExistsException {
+    public void updateByInternalCode(String internalCode, MeasuringDeviceDTO measuringDeviceDTO) throws MeasuringDeviceNotFoundException {
+        verifyIfExists(internalCode);
+        MeasuringDevice measuringDeviceToUpdate = measuringDeviceMapper.toModel(measuringDeviceDTO);
+        measuringDeviceRepository.save(measuringDeviceToUpdate);
+    }
+
+    @Transactional
+    public void deleteByInternalCode(String internalCode) throws MeasuringDeviceNotFoundException {
+        verifyIfExists(internalCode);
+        measuringDeviceRepository.deleteByInternalCode(internalCode);
+    }
+
+    private void verifyIfInternalCodeAlreadyExists(String internalCode) throws InternalCodeAlreadyExistsException {
         Optional<MeasuringDevice> optSavedMeasuringDevice = measuringDeviceRepository.findByInternalCode(internalCode);
         if (optSavedMeasuringDevice.isPresent()) {
             throw new InternalCodeAlreadyExistsException(internalCode);
         }
+    }
+
+    private MeasuringDevice verifyIfExists(String internalCode) throws MeasuringDeviceNotFoundException {
+        return measuringDeviceRepository.findByInternalCode(internalCode)
+            .orElseThrow(() -> new MeasuringDeviceNotFoundException(internalCode));
     }
 }

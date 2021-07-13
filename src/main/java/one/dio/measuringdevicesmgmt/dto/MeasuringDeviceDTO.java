@@ -4,7 +4,8 @@ import java.time.LocalDate;
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.validation.constraints.NotNull;
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,14 +21,14 @@ public class MeasuringDeviceDTO {
 
     private Long id;
 
-    @NotNull
+    @NotEmpty
     private String description;
 
     @Enumerated(EnumType.STRING)
-    @NotNull
+    @Valid
     private UnitOfMeasurement unitOfMeasurement;
 
-    @NotNull
+    @NotEmpty
     private String internalCode;
 
     private LocalDate createdAt;

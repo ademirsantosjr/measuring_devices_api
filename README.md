@@ -1,6 +1,6 @@
 # API REST de gerenciamento de Dispositivos de Medição, aplicando testes unitários com JUnit 5
 
-API REST desenvolvida com base na _live-coding_ do Bootcamp **GFT START #2 Java** da **Digital Innovation One**, e inspirada no [repositório: beer API](https://github.com/rpeleias/beer_api_digital_innovation_one) disponibilizado por [Rodrigo Peleias](https://github.com/rpeleias).<br>
+API REST desenvolvida com base na _live-coding_ do **Bootcamp GFT START #2 Java** da **Digital Innovation One**, e inspirada no [repositório: beer API](https://github.com/rpeleias/beer_api_digital_innovation_one) disponibilizado por [Rodrigo Peleias](https://github.com/rpeleias).<br>
 
 ---
 ## Tópicos abordados na *live-coding*

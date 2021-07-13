@@ -23,9 +23,6 @@ public class SwaggerConfig {
     private static final String CONTACT_NAME = "Ademir Martins dos Santos Junior";
     private static final String CONTACT_GITHUB = "https://github.com/ademirsantosjr";
 
-
-
-
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)

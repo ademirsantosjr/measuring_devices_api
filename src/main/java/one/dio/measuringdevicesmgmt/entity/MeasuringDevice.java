@@ -38,6 +38,7 @@ public class MeasuringDevice {
     @Column(nullable = false, unique = true)
     private String internalCode;
 
+    @Column(updatable = false)
     private LocalDate createdAt;
 
     @PrePersist

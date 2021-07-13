@@ -27,6 +27,7 @@ import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
 import one.dio.measuringdevicesmgmt.builder.MeasuringDeviceDTOBuilder;
 import one.dio.measuringdevicesmgmt.dto.MeasuringDeviceDTO;
+import one.dio.measuringdevicesmgmt.exception.InternalCodeAlreadyExistsException;
 import one.dio.measuringdevicesmgmt.exception.MeasuringDeviceNotFoundException;
 import one.dio.measuringdevicesmgmt.service.MeasuringDeviceService;
 
@@ -35,6 +36,7 @@ public class MeasuringDeviceControllerTest {
     
     private static final String MEASURING_DEVICE_API_URL_PATH = "/api/v1/devices";
     private static final String INVALID_MEASURING_DEVICE_INTERNAL_CODE = "DVC-12345";
+    private static final String NOT_EXISTING_MEASURING_DEVICE_INTERNAL_CODE = "Not_Existing";
 
     private MockMvc mockMvc;
 
@@ -164,6 +166,39 @@ public class MeasuringDeviceControllerTest {
             .andExpect(jsonPath("$.description", is(expectedUpdatedMeasuringDeviceDTO.getDescription())))
             .andExpect(jsonPath("$.internalCode", is(expectedUpdatedMeasuringDeviceDTO.getInternalCode())))
             .andExpect(jsonPath("$.unitOfMeasurement", is(expectedUpdatedMeasuringDeviceDTO.getUnitOfMeasurement().toString())));
+    }
+
+    @Test
+    void whenPUTIsCalledWithInvalidInternalCodeThenReturnNotFoundExceptionIsThrown() throws Exception {
+        // given
+        MeasuringDeviceDTO toUpdateMeasuringDeviceDTO = MeasuringDeviceDTOBuilder.builder().build().toDTO();
+
+        // when
+        doThrow(MeasuringDeviceNotFoundException.class)
+            .when(measuringDeviceService).updateByInternalCode(NOT_EXISTING_MEASURING_DEVICE_INTERNAL_CODE, toUpdateMeasuringDeviceDTO);
+        
+        // then
+        mockMvc.perform(MockMvcRequestBuilders.put(MEASURING_DEVICE_API_URL_PATH + "/" + NOT_EXISTING_MEASURING_DEVICE_INTERNAL_CODE)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(toUpdateMeasuringDeviceDTO)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void whenPUTIsCalledWithAlreadyExistingInternalCodeThenReturnInternalCodeAlreadyExistingException() throws Exception {
+        // given
+        MeasuringDeviceDTO beforeUpdateMeasuringDeviceDTO = MeasuringDeviceDTOBuilder.builder().build().toDTO();
+        MeasuringDeviceDTO toUpdateMeasuringDeviceDTO = MeasuringDeviceDTOBuilder.builder().build().toDTO();
+        toUpdateMeasuringDeviceDTO.setInternalCode(beforeUpdateMeasuringDeviceDTO.getInternalCode());
+
+        doThrow(InternalCodeAlreadyExistsException.class)
+            .when(measuringDeviceService).updateByInternalCode(toUpdateMeasuringDeviceDTO.getInternalCode(), toUpdateMeasuringDeviceDTO);
+        
+        // then
+        mockMvc.perform(MockMvcRequestBuilders.put(MEASURING_DEVICE_API_URL_PATH + "/" + beforeUpdateMeasuringDeviceDTO.getInternalCode())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(beforeUpdateMeasuringDeviceDTO)))
+                .andExpect(status().isBadRequest());
     }
 
     @Test

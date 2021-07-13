@@ -65,7 +65,8 @@ public class MeasuringDeviceServiceTest {
         MeasuringDevice duplicatedMeasuringDevice = measuringDeviceMapper.toModel(expectedMeasuringDeviceDTO);
 
         // when
-        when(measuringDeviceRepository.findByInternalCode(expectedMeasuringDeviceDTO.getInternalCode())).thenReturn(Optional.of(duplicatedMeasuringDevice));
+        when(measuringDeviceRepository.findByInternalCode(expectedMeasuringDeviceDTO.getInternalCode()))
+            .thenReturn(Optional.of(duplicatedMeasuringDevice));
         
         // then
         assertThrows(InternalCodeAlreadyExistsException.class,

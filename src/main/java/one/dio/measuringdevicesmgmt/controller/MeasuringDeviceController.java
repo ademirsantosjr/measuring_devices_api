@@ -46,8 +46,8 @@ public class MeasuringDeviceController {
     }
 
     @PutMapping("/{internalCode}")
-    public void updateByInternalCode(@PathVariable String internalCode, @RequestBody MeasuringDeviceDTO measuringDeviceDTO) throws MeasuringDeviceNotFoundException {
-        measuringDeviceService.updateByInternalCode(internalCode, measuringDeviceDTO);
+    public MeasuringDeviceDTO updateByInternalCode(@PathVariable String internalCode, @RequestBody MeasuringDeviceDTO measuringDeviceDTO) throws MeasuringDeviceNotFoundException {
+        return measuringDeviceService.updateByInternalCode(internalCode, measuringDeviceDTO);
     }
 
     @DeleteMapping("/{internalCode}")

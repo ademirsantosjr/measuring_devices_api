@@ -4,6 +4,7 @@ import static one.dio.measuringdevicesmgmt.utils.JsonConvertionUtils.asJsonStrin
 //import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -11,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,7 +29,10 @@ import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
 import one.dio.measuringdevicesmgmt.builder.MeasuringDeviceDTOBuilder;
 import one.dio.measuringdevicesmgmt.dto.MeasuringDeviceDTO;
+import one.dio.measuringdevicesmgmt.entity.MeasuringDevice;
 import one.dio.measuringdevicesmgmt.exception.MeasuringDeviceNotFoundException;
+import one.dio.measuringdevicesmgmt.mapper.MeasuringDeviceMapper;
+import one.dio.measuringdevicesmgmt.repository.MeasuringDeviceRepository;
 import one.dio.measuringdevicesmgmt.service.MeasuringDeviceService;
 
 @ExtendWith(MockitoExtension.class)
@@ -37,6 +42,8 @@ public class MeasuringDeviceControllerTest {
     private static final String INVALID_MEASURING_DEVICE_INTERNAL_CODE = "DVC-12345";
 
     private MockMvc mockMvc;
+
+    private MeasuringDeviceMapper measuringDeviceMapper = MeasuringDeviceMapper.INSTANCE;
 
     @Mock
     private MeasuringDeviceService measuringDeviceService;
@@ -147,7 +154,27 @@ public class MeasuringDeviceControllerTest {
     }
 
     @Test
-    void whenDELETEIsCalledWithValidIdThenNoContentStatusIsReturned() throws Exception {
+    void whenPUTIsCalledWithValidInternalCodeThenMeasuringDeviceIsUpdated() throws Exception {
+        // given
+        MeasuringDeviceDTO toUpdateMeasuringDeviceDTO = MeasuringDeviceDTOBuilder.builder().build().toDTO();        
+        MeasuringDeviceDTO expectedUpdatedMeasuringDeviceDTO = toUpdateMeasuringDeviceDTO;
+        toUpdateMeasuringDeviceDTO.setInternalCode("Changed");
+
+        doReturn(expectedUpdatedMeasuringDeviceDTO)
+            .when(measuringDeviceService).updateByInternalCode(toUpdateMeasuringDeviceDTO.getInternalCode(), expectedUpdatedMeasuringDeviceDTO);
+        
+        // then
+        mockMvc.perform(MockMvcRequestBuilders.put(MEASURING_DEVICE_API_URL_PATH + "/" + toUpdateMeasuringDeviceDTO.getInternalCode())
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(asJsonString(toUpdateMeasuringDeviceDTO)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.description", is(expectedUpdatedMeasuringDeviceDTO.getDescription())))
+            .andExpect(jsonPath("$.internalCode", is(expectedUpdatedMeasuringDeviceDTO.getInternalCode())))
+            .andExpect(jsonPath("$.unitOfMeasurement", is(expectedUpdatedMeasuringDeviceDTO.getUnitOfMeasurement().toString())));
+    }
+
+    @Test
+    void whenDELETEIsCalledWithValidInternalCodeThenNoContentStatusIsReturned() throws Exception {
         // given
         MeasuringDeviceDTO measuringDeviceDTO = MeasuringDeviceDTOBuilder.builder().build().toDTO();
 
@@ -161,7 +188,7 @@ public class MeasuringDeviceControllerTest {
     }
 
     @Test
-    void whenDELETEIsCalledWithInvalidIdThenNotFoundStatusIsReturned() throws Exception {
+    void whenDELETEIsCalledWithInvalidInternalCodeThenNotFoundStatusIsReturned() throws Exception {
         // when
         doThrow(MeasuringDeviceNotFoundException.class)
             .when(measuringDeviceService).deleteByInternalCode(INVALID_MEASURING_DEVICE_INTERNAL_CODE);

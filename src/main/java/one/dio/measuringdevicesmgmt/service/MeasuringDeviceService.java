@@ -44,10 +44,11 @@ public class MeasuringDeviceService {
                                         .collect(Collectors.toList());
     }
 
-    public void updateByInternalCode(String internalCode, MeasuringDeviceDTO measuringDeviceDTO) throws MeasuringDeviceNotFoundException {
+    public MeasuringDeviceDTO updateByInternalCode(String internalCode, MeasuringDeviceDTO measuringDeviceDTO) throws MeasuringDeviceNotFoundException {
         verifyIfExists(internalCode);
         MeasuringDevice measuringDeviceToUpdate = measuringDeviceMapper.toModel(measuringDeviceDTO);
-        measuringDeviceRepository.save(measuringDeviceToUpdate);
+        MeasuringDevice updatedMeasuringDevice = measuringDeviceRepository.save(measuringDeviceToUpdate);
+        return measuringDeviceMapper.toDTO(updatedMeasuringDevice);
     }
 
     @Transactional
